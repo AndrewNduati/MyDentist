@@ -9,49 +9,58 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  TouchableHighlight,
+  ListView
 } from 'react-native';
 
-import * as firebase from 'firebase';
+var Firebase =  require('firebase');
+const styles = require('./styles.js');
+const StatusBar = require('./components/StatusBar');
+const ListItem = require('./components/ListItem');
 
-
-
+var config = {
+  authDomain:'https://dentist-directory-1c7d3.firebaseio.com' // Get to post to firebase then continue.
+}
+var myFirebaseRef = Firebase.initializeApp(config);
+  
 export default class MyDentist extends Component {
+ constructor(props) {
+  super(props);
+  this.state = {
+    dataSource: new ListView.DataSource({
+      rowHasChanged: (row1, row2) => row1 !== row2,
+    })
+  };
+}
+ _renderItem(item) {
+    return (
+      <ListItem item="{item}"  />
+    );
+  }
+
+componentDidMount() {
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows([{ title: 'Pizza' }])
+    })
+  }
+  
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
+         <StatusBar title="My Dentist" />
+            <ListView
+            dataSource={this.state.dataSource}
+            renderRow={(rowData) => <Text>{rowData.title}</Text>} // Just rendering title as opposed to entire ListView
+        
+          />
       </View>
     );
   }
+  
+
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
+
 
 AppRegistry.registerComponent('MyDentist', () => MyDentist);
